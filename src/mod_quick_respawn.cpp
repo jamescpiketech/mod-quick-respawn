@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Config.h"
 #include "Chat.h"
+#include "SharedDefines.h"
 
 // Add player scripts
 class QuickRespawn_Player : public PlayerScript
@@ -41,6 +42,19 @@ public:
                 customRepopLocation.target_Y = 6987.497559;
                 customRepopLocation.target_Z = 152.042084;
                 customRepopLocation.target_Orientation = 5.820590;
+                break;
+
+            // Vanilla Naxx 40 (runs as 10H on map 533) - always return to Eastern Plaguelands entrance
+            case 533:
+                if (map->GetSpawnMode() == RAID_DIFFICULTY_10MAN_HEROIC)
+                {
+                    LOG_INFO("module", "mod_quick_respawn: Using custom repop location for vanilla Naxx (map 533, 10H)");
+                    customRepopLocation.target_mapId = 0;
+                    customRepopLocation.target_X = 3119.318f;
+                    customRepopLocation.target_Y = -3755.455f;
+                    customRepopLocation.target_Z = 133.56865f;
+                    customRepopLocation.target_Orientation = 1.0722394f;
+                }
                 break;
             
             default:
