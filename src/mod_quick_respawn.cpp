@@ -46,7 +46,7 @@ public:
 
             // Vanilla Naxx 40 (runs as 10H on map 533) - always return to Eastern Plaguelands entrance
             case 533:
-                if (map->GetSpawnMode() == RAID_DIFFICULTY_10MAN_HEROIC)
+                if (map->GetSpawnMode() == RAID_DIFFICULTY_10MAN_HEROIC || player->GetRaidDifficulty() == RAID_DIFFICULTY_10MAN_HEROIC)
                 {
                     LOG_INFO("module", "mod_quick_respawn: Using custom repop location for vanilla Naxx (map 533, 10H)");
                     customRepopLocation.target_mapId = 0;
