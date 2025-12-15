@@ -29,7 +29,8 @@ public:
         }
 
         AreaTriggerTeleport customRepopLocation = {};
-        AreaTriggerTeleport const *repopLocation;
+        AreaTriggerTeleport const* repopLocation = nullptr;
+        bool useCustomLocation = false;
 
         // Exceptions for specific maps
         switch (map->GetId())
@@ -42,6 +43,7 @@ public:
                 customRepopLocation.target_Y = 6987.497559;
                 customRepopLocation.target_Z = 152.042084;
                 customRepopLocation.target_Orientation = 5.820590;
+                useCustomLocation = true;
                 break;
 
             // Vanilla Naxx 40 (runs as 10H on map 533) - always return to Eastern Plaguelands entrance
@@ -54,6 +56,15 @@ public:
                     customRepopLocation.target_Y = -3755.455f;
                     customRepopLocation.target_Z = 133.56865f;
                     customRepopLocation.target_Orientation = 1.0722394f;
+                    useCustomLocation = true;
+                }
+                else
+                {
+                    repopLocation = sObjectMgr->GetGoBackTrigger(map->GetId());
+
+                    if (!repopLocation) {
+                        repopLocation = sObjectMgr->GetMapEntranceTrigger(map->GetId());
+                    }
                 }
                 break;
             
@@ -68,28 +79,28 @@ public:
                 break;
         }
 
-        if (customRepopLocation.target_mapId > 0) 
+        if (useCustomLocation)
         {
             repopLocation = &customRepopLocation;
         }
     
-        if (repopLocation)
+        if (!repopLocation)
         {
-            LOG_INFO("module", "mod_quick_respawn: Custom repop location found, teleporting player");
-            player->TeleportTo(
-                repopLocation->target_mapId,
-                repopLocation->target_X,
-                repopLocation->target_Y,
-                repopLocation->target_Z,
-                repopLocation->target_Orientation);
-
-            player->RemovePlayerFlag(PLAYER_FLAGS_IS_OUT_OF_BOUNDS);
-            return false;
+            LOG_INFO("module", "mod_quick_respawn: No custom repop location found. Repopping normally");
+            return true;
         }
 
-        LOG_INFO("module", "mod_quick_respawn: No custom repop location found. Repopping normally");
+        LOG_INFO("module", "mod_quick_respawn: Custom repop location found, teleporting player");
+        player->TeleportTo(
+            repopLocation->target_mapId,
+            repopLocation->target_X,
+            repopLocation->target_Y,
+            repopLocation->target_Z,
+            repopLocation->target_Orientation);
 
-        return true;
+        player->RemovePlayerFlag(PLAYER_FLAGS_IS_OUT_OF_BOUNDS);
+        return false;
+
     }
 };
 
